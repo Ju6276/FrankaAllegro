@@ -161,6 +161,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        metal_wall:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         palm_link:
           Alpha: 1
           Show Axes: false
@@ -206,6 +211,10 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        panda_link8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         table:
           Alpha: 1
           Show Axes: false
@@ -270,6 +279,8 @@ Visualization Manager:
           Value: false
         link_9.0:
           Value: false
+        metal_wall:
+          Value: false
         palm_link:
           Value: true
         panda_link0:
@@ -288,8 +299,10 @@ Visualization Manager:
           Value: false
         panda_link7:
           Value: false
-        table:
+        panda_link8:
           Value: true
+        table:
+          Value: false
         world:
           Value: false
       Marker Alpha: 1
@@ -301,6 +314,8 @@ Visualization Manager:
       Tree:
         world:
           table:
+            metal_wall:
+              {}
             panda_link0:
               panda_link1:
                 panda_link2:
@@ -309,33 +324,33 @@ Visualization Manager:
                       panda_link5:
                         panda_link6:
                           panda_link7:
-                            franka_flange:
-                              {}
-                            palm_link:
-                              link_0.0:
-                                link_1.0:
-                                  link_2.0:
-                                    link_3.0:
-                                      link_3.0_tip:
-                                        {}
-                              link_12.0:
-                                link_13.0:
-                                  link_14.0:
-                                    link_15.0:
-                                      link_15.0_tip:
-                                        {}
-                              link_4.0:
-                                link_5.0:
-                                  link_6.0:
-                                    link_7.0:
-                                      link_7.0_tip:
-                                        {}
-                              link_8.0:
-                                link_9.0:
-                                  link_10.0:
-                                    link_11.0:
-                                      link_11.0_tip:
-                                        {}
+                            panda_link8:
+                              franka_flange:
+                                palm_link:
+                                  link_0.0:
+                                    link_1.0:
+                                      link_2.0:
+                                        link_3.0:
+                                          link_3.0_tip:
+                                            {}
+                                  link_12.0:
+                                    link_13.0:
+                                      link_14.0:
+                                        link_15.0:
+                                          link_15.0_tip:
+                                            {}
+                                  link_4.0:
+                                    link_5.0:
+                                      link_6.0:
+                                        link_7.0:
+                                          link_7.0_tip:
+                                            {}
+                                  link_8.0:
+                                    link_9.0:
+                                      link_10.0:
+                                        link_11.0:
+                                          link_11.0_tip:
+                                            {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -356,7 +371,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.207787990570068
+      Distance: 2.418517827987671
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -372,9 +387,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.43539825081825256
+      Pitch: 1.2053978443145752
       Target Frame: <Fixed Frame>
-      Yaw: 1.1153982877731323
+      Yaw: 6.248583793640137
     Saved: ~
 Window Geometry:
   Displays:
@@ -391,4 +406,4 @@ Window Geometry:
     collapsed: false
   Width: 2021
   X: 215
-  Y: 34
+  Y: 0

@@ -5,7 +5,7 @@
     <link name="table">
         <visual>
             <geometry>
-                <mesh filename="package://allegro_franka_model/src/meshes/table/table.obj" scale="1.5 1.5 1" />
+                <mesh filename="package://allegro_franka_model/src/meshes/table/table.obj" scale="1.5 1 1" />
             </geometry>
             <material name="table_material">
                 <color rgba="0.5 0.5 0.5 1.0" />
@@ -13,8 +13,7 @@
         </visual>
         <collision>
             <geometry>
-                <mesh filename="package://allegro_franka_model/src/meshes/table/table.obj" scale="1.5 1.5 1" />
-
+                <mesh filename="package://allegro_franka_model/src/meshes/table/table.obj" scale="1.5 1 1" />
             </geometry>
         </collision>
         <inertial>
@@ -23,17 +22,15 @@
             <inertia ixx="0.03" iyy="0.03" izz="0.03" ixy="0.0" ixz="0.0" iyz="0.0" />
         </inertial>
     </link>
-
     <joint name="world_to_table" type="fixed">
         <parent link="world" />
         <child link="table" />
         <origin xyz="0 0 0" rpy="0 0 0" />
     </joint>
     <!-- 将panda_link0连接到world （Or panda_link0连接到table？）-->
-    <joint name="world_joint" type="fixed">
-        <parent link="world" />
+    <joint name="table_to_panda_link0" type="fixed">
+        <parent link="table" />
         <child link="panda_link0" />
-        <!-- 设置机器人基座位置：桌子高度0.8m -->
         <origin xyz="0 0 0.8" rpy="0 0 0" />
     </joint>
     <link name="panda_link0">
@@ -211,6 +208,7 @@
         <axis xyz="0 0 1" />
         <dynamics damping="10.0" />
         <limit effort="12" lower="-0.0175" upper="3.7525" velocity="2.6100" />
+        <initial_position>1.57</initial_position>
         <!-- <dynamics damping="10.0"/>
     <limit effort="12" lower="-0.0873" upper="3.0" velocity="2.6100"/> -->
     </joint>
@@ -240,6 +238,13 @@
         <dynamics damping="10.0" />
         <limit effort="12" lower="-2.8973" upper="2.8973" velocity="2.6100" />
     </joint>
+    <link name="panda_link8" />
+    <joint name="panda_joint8" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.107" />
+        <parent link="panda_link7" />
+        <child link="panda_link8" />
+        <axis xyz="0 0 0" />
+    </joint>
     <!-- 添加flange链接 -->
     <link name="franka_flange">
         <visual>
@@ -265,17 +270,19 @@
     </link>
     <!-- 将flange连接到 panda_link7 （0.116是从frankadocumentation）-->
     <joint name="panda_flange_joint" type="fixed">
-        <parent link="panda_link7" />
+        <parent link="panda_link8" />
         <child link="franka_flange" />
-        <origin rpy="0 3.14159 0" xyz="0 0 0.116" />
+        <!-- <origin rpy="0 3.14159 0" xyz="0 0 0.116" /> -->
+        <origin rpy="0 3.14159 0" xyz="0 0 0.01" />
         <axis xyz="0 0 1" />
     </joint>
-    <joint name="hand_joint" type="fixed">
+    <joint name="flange_hand_joint" type="fixed">
         <parent link="franka_flange" />
         <child link="palm_link" />
         <!-- 调整手掌的位置和方向（？） -->
         <!-- 0.215 is the distance from the wrist to the palm -->
-        <origin rpy="3.14159  0 0" xyz="0 0 -0.095 " />
+        <!-- <origin rpy="3.14159  0 0" xyz="0 0 -0.095 " /> -->
+        <origin rpy="3.14159  0 0" xyz="0 0 -0.099 " />
     </joint>
     <!-- PALM -->
     <link name="palm_link">
@@ -862,6 +869,38 @@
         <parent link="link_15" />
         <child link="link_15_tip" />
         <origin rpy="0 0 0" xyz="0 0 0.0423" />
+    </joint>
+    <link name="metal_wall">
+        <visual>
+            <geometry>
+                <box size="1.8 0.01 0.8" />
+                <!-- 设置金属墙的大小 -->
+            </geometry>
+            <material name="metal_material">
+                <color rgba="0.7 0.7 0.7 1.0" />
+                <!-- 设置金属材质的颜色 -->
+                <!-- 可选: 添加纹理文件 -->
+                <!-- <texture filename="package://allegro_franka_model/src/textures/metal_texture.png"/> -->
+            </material>
+        </visual>
+        <collision>
+            <geometry>
+                <box size="1.8 0.01 0.8" />
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.2" />
+            <!-- 设置金属墙的质量 -->
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <inertia ixx="0.05" iyy="0.05" izz="0.05" ixy="0.0" ixz="0.0" iyz="0.0" />
+        </inertial>
+    </link>
+    <!-- 将墙壁放置在桌子后面 -->
+    <joint name="wall_to_table" type="fixed">
+        <parent link="table" />
+        <child link="metal_wall" />
+        <origin xyz="0.3 -0.5 1.2" rpy="0 0 0" />
+        <!-- 位置调整：xyz决定墙壁在桌子后的具体位置 -->
     </joint>
     <transmission name="trans_panda_joint1">
         <type>transmission_interface/SimpleTransmission</type>
