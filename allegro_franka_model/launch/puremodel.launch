@@ -1,0 +1,26 @@
+<launch>
+  <!-- 加载机器人模型参数 -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find allegro_franka_model)/src/urdf/franka_allefro_withoutevn.xml'" />
+  
+
+  <!-- 启动joint_state_splitter -->
+  <node name="joint_state_splitter" pkg="allegro_franka_model" type="joint_state_splitter.py" output="screen"/>
+
+  <!-- 启动robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <remap from="joint_states" to="all_joint_states"/>
+    <param name="publish_frequency" value="30"/>
+  </node>
+
+  <!-- 启动joint_state_publisher_gui -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
+    <param name="rate" value="30"/>
+    <remap from="joint_states" to="all_joint_states"/>
+  </node>
+
+  <!-- 启动rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" />
+
+
+
+</launch>

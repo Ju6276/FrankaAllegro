@@ -1,0 +1,394 @@
+Panels:
+  - Class: rviz/Displays
+    Help Height: 85
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /TF1
+        - /TF1/Frames1
+      Splitter Ratio: 0.5
+    Tree Height: 351
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Expanded: ~
+    Name: Tool Properties
+    Splitter Ratio: 0.5
+  - Class: rviz/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+Preferences:
+  PromptSaveOnExit: true
+Toolbars:
+  toolButtonStyle: 2
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetical Order
+        franka_flange:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_0.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_1.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_10.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_11.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_11.0_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_12.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_13.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_14.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_15.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_15.0_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_2.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_3.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_3.0_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_4.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_5.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_6.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_7.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_7.0_tip:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_8.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link_9.0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        palm_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        panda_link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        table:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        world:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+      Name: FrankaAllegro
+      Robot Description: robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Class: rviz/TF
+      Enabled: true
+      Filter (blacklist): ""
+      Filter (whitelist): ""
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        franka_flange:
+          Value: true
+        link_0.0:
+          Value: false
+        link_1.0:
+          Value: false
+        link_10.0:
+          Value: false
+        link_11.0:
+          Value: false
+        link_11.0_tip:
+          Value: false
+        link_12.0:
+          Value: false
+        link_13.0:
+          Value: false
+        link_14.0:
+          Value: false
+        link_15.0:
+          Value: false
+        link_15.0_tip:
+          Value: false
+        link_2.0:
+          Value: false
+        link_3.0:
+          Value: false
+        link_3.0_tip:
+          Value: false
+        link_4.0:
+          Value: false
+        link_5.0:
+          Value: false
+        link_6.0:
+          Value: false
+        link_7.0:
+          Value: false
+        link_7.0_tip:
+          Value: false
+        link_8.0:
+          Value: false
+        link_9.0:
+          Value: false
+        palm_link:
+          Value: true
+        panda_link0:
+          Value: false
+        panda_link1:
+          Value: false
+        panda_link2:
+          Value: false
+        panda_link3:
+          Value: false
+        panda_link4:
+          Value: false
+        panda_link5:
+          Value: false
+        panda_link6:
+          Value: false
+        panda_link7:
+          Value: false
+        table:
+          Value: true
+        world:
+          Value: false
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          table:
+            panda_link0:
+              panda_link1:
+                panda_link2:
+                  panda_link3:
+                    panda_link4:
+                      panda_link5:
+                        panda_link6:
+                          panda_link7:
+                            franka_flange:
+                              {}
+                            palm_link:
+                              link_0.0:
+                                link_1.0:
+                                  link_2.0:
+                                    link_3.0:
+                                      link_3.0_tip:
+                                        {}
+                              link_12.0:
+                                link_13.0:
+                                  link_14.0:
+                                    link_15.0:
+                                      link_15.0_tip:
+                                        {}
+                              link_4.0:
+                                link_5.0:
+                                  link_6.0:
+                                    link_7.0:
+                                      link_7.0_tip:
+                                        {}
+                              link_8.0:
+                                link_9.0:
+                                  link_10.0:
+                                    link_11.0:
+                                      link_11.0_tip:
+                                        {}
+      Update Interval: 0
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Default Light: true
+    Fixed Frame: world
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+      Hide Inactive Objects: true
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+    - Class: rviz/FocusCamera
+    - Class: rviz/Measure
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 5.207787990570068
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Field of View: 0.7853981852531433
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.43539825081825256
+      Target Frame: <Fixed Frame>
+      Yaw: 1.1153982877731323
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1282
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd00000001000000000000016000000496fc0200000004fb000000100044006900730070006c0061007900730100000049000001ff000000f500fffffffb0000001200530065006c0065006300740069006f006e0000000177000000860000007000fffffffb0000001e0054006f006f006c002000500072006f0070006500720074006900650073010000024f000000e60000007000fffffffb0000000a00560069006500770073010000033c000001a3000000c800ffffff0000067e0000049600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 2021
+  X: 215
+  Y: 34

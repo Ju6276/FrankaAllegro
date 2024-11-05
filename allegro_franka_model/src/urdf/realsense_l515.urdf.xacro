@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- 将相机定义改为宏 -->
+  <xacro:macro name="sensor_l515" params="parent">
+    <!-- 定义相机的物理属性 -->
+    <xacro:property name="camera_width" value="0.061"/>
+    <xacro:property name="camera_height" value="0.061"/>
+    <xacro:property name="camera_depth" value="0.026"/>
+    <xacro:property name="camera_mass" value="0.1"/>
+
+    <link name="camera_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${camera_depth} ${camera_width} ${camera_height}"/>
+        </geometry>
+        <material name="gray">
+          <color rgba="0.5 0.5 0.5 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="${camera_depth} ${camera_width} ${camera_height}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="${camera_mass}"/>
+        <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
+      </inertial>
+    </link>
+
+    <!-- 修改joint，使用传入的parent参数 -->
+    <joint name="camera_joint" type="fixed">
+      <parent link="${parent}"/>
+      <child link="camera_base_link"/>
+      <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    </joint>
+
+    <link name="camera_optical_frame"/>
+
+    <joint name="camera_optical_joint" type="fixed">
+      <parent link="camera_base_link"/>
+      <child link="camera_optical_frame"/>
+      <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+    </joint>
+
+    <!-- Gazebo插件配置 -->
+    <gazebo reference="camera_base_link">
+      <material>Gazebo/Grey</material>
+      <sensor type="depth" name="realsense_l515">
+        <always_on>true</always_on>
+        <update_rate>30.0</update_rate>
+        <camera>
+          <horizontal_fov>1.0472</horizontal_fov>
+          <image>
+            <width>1280</width>
+            <height>720</height>
+            <format>R8G8B8</format>
+          </image>
+          <clip>
+            <near>0.01</near>
+            <far>10.0</far>
+          </clip>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+          <baseline>0.2</baseline>
+          <alwaysOn>true</alwaysOn>
+          <updateRate>30.0</updateRate>
+          <cameraName>realsense_l515</cameraName>
+          <frameName>camera_optical_frame</frameName>
+          <imageTopicName>rgb/image_raw</imageTopicName>
+          <depthImageTopicName>depth/image_raw</depthImageTopicName>
+          <pointCloudTopicName>depth/points</pointCloudTopicName>
+          <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+          <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+          <pointCloudCutoff>0.1</pointCloudCutoff>
+          <hackBaseline>0.07</hackBaseline>
+          <distortionK1>0.0</distortionK1>
+          <distortionK2>0.0</distortionK2>
+          <distortionK3>0.0</distortionK3>
+          <distortionT1>0.0</distortionT1>
+          <distortionT2>0.0</distortionT2>
+        </plugin>
+      </sensor>
+    </gazebo>
+
+  </xacro:macro>
+</robot> 

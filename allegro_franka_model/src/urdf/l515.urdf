@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<robot name="camera_l515">
+  <link name="world"/>
+  
+  <!-- 添加中间连接用于移动和旋转 -->
+  <link name="camera_x_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <link name="camera_y_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <link name="camera_z_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- 添加旋转连接 -->
+  <link name="camera_roll_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <link name="camera_pitch_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <link name="camera_yaw_link">
+    <inertial>
+      <mass value="0.001"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- 相机本体 -->
+  <link name="camera_base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://allegro_franka_model/src/meshes/realsense2_description/meshes/l515.dae"/>
+      </geometry>
+      <material name="aluminum">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://allegro_franka_model/src/meshes/realsense2_description/meshes/l515.dae"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- 平移关节 -->
+  <joint name="camera_x_joint" type="prismatic">
+    <parent link="world"/>
+    <child link="camera_x_link"/>
+    <origin xyz="0.7 0 0.9" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-1.5" upper="1.5" effort="100" velocity="1"/>
+  </joint>
+
+  <joint name="camera_y_joint" type="prismatic">
+    <parent link="camera_x_link"/>
+    <child link="camera_y_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-0.8" upper="0.8" effort="100" velocity="1"/>
+  </joint>
+
+  <joint name="camera_z_joint" type="prismatic">
+    <parent link="camera_y_link"/>
+    <child link="camera_z_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-0.2" upper="0.5" effort="100" velocity="1"/>
+  </joint>
+
+  <!-- 旋转关节 -->
+  <joint name="camera_roll_joint" type="revolute">
+    <parent link="camera_z_link"/>
+    <child link="camera_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="1 0 0"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1"/>
+  </joint>
+
+  <joint name="camera_pitch_joint" type="revolute">
+    <parent link="camera_roll_link"/>
+    <child link="camera_pitch_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1"/>
+  </joint>
+
+  <joint name="camera_yaw_joint" type="revolute">
+    <parent link="camera_pitch_link"/>
+    <child link="camera_yaw_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1"/>
+  </joint>
+
+  <!-- 相机固定连接 -->
+  <joint name="camera_base_joint" type="fixed">
+    <parent link="camera_yaw_link"/>
+    <child link="camera_base_link"/>
+    <origin xyz="0 0 0" rpy="1.5708 1.5708 1.5708"/>
+  </joint>
+</robot>

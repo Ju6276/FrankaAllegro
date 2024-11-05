@@ -1,0 +1,22 @@
+<launch>
+  <!-- 加载机器人模型参数 -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find your_package_name)/urdf/realsense_l515.urdf.xacro'" />
+
+  <!-- 启动Gazebo仿真环境 -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- 在Gazebo中加载机器人模型 -->
+  <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" 
+        args="-param robot_description -urdf -model realsense_l515"/>
+
+  <!-- 启动robot_state_publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  <!-- 启动rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find your_package_name)/rviz/camera_view.rviz"/>
+</launch>

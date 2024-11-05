@@ -1,0 +1,57 @@
+<launch>
+  <!-- 添加参数控制是否加载L515 -->
+  <arg name="use_l515" default="false" doc="Set to true to include L515 camera"/>
+
+  <!-- 选择RViz配置文件 -->
+  <arg name="rviz_config" value="$(find allegro_franka_model)/config/view_with_l515.rviz" if="$(arg use_l515)"/>
+  <arg name="rviz_config" value="$(find allegro_franka_model)/config/view_base.rviz" unless="$(arg use_l515)"/>
+
+  <!-- 加载机械臂的 URDF -->
+  <param name="robot_description" command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/franka_allegro.urdf"/>
+  
+  <!-- 统一的 joint state publisher -->
+  <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
+    <param name="rate" value="30"/>
+    <param name="use_gui" value="true"/>
+    <remap from="joint_states" to="all_joint_states"/>
+    <rosparam command="load" file="$(find allegro_franka_model)/config/initial_position.yaml"/>
+  </node>
+  
+  <!-- 使用 Python 脚本分离关节状态 -->
+  <node name="joint_state_splitter" pkg="allegro_franka_model" type="joint_state_splitter.py" output="screen">
+    <remap from="joint_states" to="all_joint_states"/>
+    <remap from="franka_states" to="franka_joint_states"/>
+    <remap from="allegro_states" to="allegro_joint_states"/>
+  </node>
+  
+  <!-- robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="publish_frequency" value="30"/>
+    <remap from="joint_states" to="all_joint_states"/>
+  </node>
+  
+  <!-- 如果启用L515，加载相机相关节点 -->
+  <group if="$(arg use_l515)">
+    <!-- 加载 L515 的 URDF -->
+    <param name="robot_description_l515" command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/l515.urdf"/>
+    
+    <!-- L515 的 joint state publisher -->
+    <node name="l515_joint_state_publisher" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
+      <param name="rate" value="30"/>
+      <param name="use_gui" value="true"/>
+      <remap from="robot_description" to="robot_description_l515"/>
+      <remap from="joint_states" to="camera_pose"/>
+    </node>
+    
+    <!-- L515 的 robot state publisher -->
+    <node name="l515_robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+      <param name="publish_frequency" value="30"/>
+      <remap from="robot_description" to="robot_description_l515"/>
+      <remap from="joint_states" to="camera_pose"/>
+    </node>
+  </group>
+  
+  <!-- 启动 rviz -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)"/>
+  
+</launch>
