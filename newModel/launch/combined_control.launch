@@ -1,67 +1,28 @@
+<?xml version="1.0"?>
 <launch>
-    <!-- 添加机器人IP参数 -->
+    <!-- 基础参数 -->
     <arg name="robot_ip" default="192.168.3.100"/>
     <arg name="load_gripper" default="false"/>
-    <arg name="use_rviz" default="true"/>
-
-    <!-- 加载机器人描述参数 -->
-    <param name="robot_description" 
-          command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/newModelforEnv.xml"/>
-
-    <!-- 启动Franka Control Interface -->
-    <node name="franka_control" 
-          pkg="franka_control" 
-          type="franka_control_node" 
-          output="screen" 
-          required="true">
-        <param name="robot_ip" value="$(arg robot_ip)"/>
-        <rosparam command="load" 
-                  file="$(find franka_control)/config/franka_control_node.yaml" 
-                  subst_value="true"/>
-    </node>
-
-    <!-- 加载控制器配置 -->
-    <rosparam command="load" 
-              file="$(find newModel)/config/controllers.yaml"/>
     
-    <!-- 启动控制器管理器 -->
-    <node name="controller_spawner" 
-          pkg="controller_manager" 
-          type="spawner"
-          respawn="false"
-          output="screen"
-          args="joint_state_controller 
-                franka_arm_controller 
-                allegro_hand_controller"/>
-
-    <!-- 启动Allegro手控制节点 -->
-    <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
-        <arg name="HAND" value="left"/>
-        <arg name="NUM" value="0"/>
-        <arg name="CONTROLLER" value="pd"/>
+    <!-- 1. 启动Franka控制 -->
+    <include file="$(find franka_control)/launch/franka_control.launch">
+        <arg name="robot_ip" value="$(arg robot_ip)"/>
+        <arg name="load_gripper" value="$(arg load_gripper)"/>
     </include>
 
-    <!-- 启动robot_state_publisher -->
-    <node name="robot_state_publisher" 
-          pkg="robot_state_publisher" 
-          type="robot_state_publisher">
-        <param name="publish_frequency" value="50"/>
-    </node>
+    <!-- 2. 加载自定义URDF -->
+    <param name="robot_description" command="$(find xacro)/xacro '$(find allegro_franka_model)/src/urdf/newModelforEnv.xml'"/>
+    
+    <!-- 3. 加载SRDF -->
+    <param name="robot_description_semantic" textfile="$(find newModel)/config/panda.srdf" />
 
-    <!-- 启动joint_state_publisher -->
-    <node name="joint_state_publisher" 
-          pkg="joint_state_publisher" 
-          type="joint_state_publisher">
-        <rosparam param="source_list">
-            [/franka_states, /allegro_states]
-        </rosparam>
-        <param name="rate" value="50"/>
-    </node>
+    <!-- 4. 启动控制器 -->
+    <include file="$(dirname)/ros_controllers.launch" pass_all_args="true"/>
 
-    <!-- 启动rviz -->
-    <node name="rviz" 
-          pkg="rviz" 
-          type="rviz" 
-          args="-d $(find newModel)/config/combined_view.rviz"
-          if="$(arg use_rviz)"/>
+    <!-- 5. 使用MoveIt设置 -->
+    <include file="$(dirname)/demo.launch">
+        <arg name="load_robot_description" value="false"/>
+        <arg name="moveit_controller_manager" value="simple"/>
+        <arg name="pipeline" value="ompl"/>
+    </include>
 </launch>
