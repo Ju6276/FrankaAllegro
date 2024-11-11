@@ -1,0 +1,67 @@
+<launch>
+    <!-- 添加机器人IP参数 -->
+    <arg name="robot_ip" default="192.168.3.100"/>
+    <arg name="load_gripper" default="false"/>
+    <arg name="use_rviz" default="true"/>
+
+    <!-- 加载机器人描述参数 -->
+    <param name="robot_description" 
+          command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/newModelforEnv.xml"/>
+
+    <!-- 启动Franka Control Interface -->
+    <node name="franka_control" 
+          pkg="franka_control" 
+          type="franka_control_node" 
+          output="screen" 
+          required="true">
+        <param name="robot_ip" value="$(arg robot_ip)"/>
+        <rosparam command="load" 
+                  file="$(find franka_control)/config/franka_control_node.yaml" 
+                  subst_value="true"/>
+    </node>
+
+    <!-- 加载控制器配置 -->
+    <rosparam command="load" 
+              file="$(find newModel)/config/controllers.yaml"/>
+    
+    <!-- 启动控制器管理器 -->
+    <node name="controller_spawner" 
+          pkg="controller_manager" 
+          type="spawner"
+          respawn="false"
+          output="screen"
+          args="joint_state_controller 
+                franka_arm_controller 
+                allegro_hand_controller"/>
+
+    <!-- 启动Allegro手控制节点 -->
+    <include file="$(find allegro_hand_controllers)/launch/allegro_hand.launch">
+        <arg name="HAND" value="left"/>
+        <arg name="NUM" value="0"/>
+        <arg name="CONTROLLER" value="pd"/>
+    </include>
+
+    <!-- 启动robot_state_publisher -->
+    <node name="robot_state_publisher" 
+          pkg="robot_state_publisher" 
+          type="robot_state_publisher">
+        <param name="publish_frequency" value="50"/>
+    </node>
+
+    <!-- 启动joint_state_publisher -->
+    <node name="joint_state_publisher" 
+          pkg="joint_state_publisher" 
+          type="joint_state_publisher">
+        <rosparam param="source_list">
+            [/franka_states, /allegro_states]
+        </rosparam>
+        <param name="rate" value="50"/>
+    </node>
+
+    <!-- 启动rviz -->
+    <node name="rviz" 
+          pkg="rviz" 
+          type="rviz" 
+          args="-d $(find newModel)/config/combined_view.rviz"
+          if="$(arg use_rviz)"/>
+</launch>
