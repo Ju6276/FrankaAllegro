@@ -8,7 +8,7 @@
 
   <!-- 加载机械臂的 URDF -->
   <!-- <param name="robot_description" command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/franka_allegro_left.urdf"/> -->
-  <param name="robot_description" command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/newModel.xml"/>
+  <param name="robot_description" command="$(find xacro)/xacro $(find allegro_franka_model)/src/urdf/frankaAllegro.xml"/>
   
   <!-- 统一的 joint state publisher -->
   <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
