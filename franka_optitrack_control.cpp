@@ -47,6 +47,7 @@ const double max_joint_velocity = 1.0;  // rad/s, 应小于硬件限制
 const double max_joint_acceleration = 5.0;  // rad/s^2, 应小于硬件限制
 const double max_cartesian_velocity = 0.5;  // m/s
 const double max_cartesian_acceleration = 2.0;  // m/s^2
+const double max_angular_velocity = 0.5;  // rad/s
 
 // 添加一个函数用于回到home位置
 void moveToHome(const moveit::core::RobotStatePtr& current_state,
@@ -92,7 +93,7 @@ void moveToHome(const moveit::core::RobotStatePtr& current_state,
                         scale * (home_position[j] - current_positions[j]);
             waypoint.positions.push_back(pos);
             
-            // 添加速度和加速度约束
+            // 添加速度���加速度约束
             double vel = 0.0;
             double acc = 0.0;
             if (i > 0 && i < steps) {
@@ -151,7 +152,7 @@ bool resetInitialPose(std_srvs::Empty::Request& req,
 
 // 在main函数前添加可视化辅助函数
 void publishVisualization(
-    const tf2_ros::TransformBroadcaster& broadcaster,
+    tf2_ros::TransformBroadcaster& broadcaster,
     const ros::Publisher& marker_pub,
     const Eigen::Affine3d& optitrack_pose,
     const Eigen::Affine3d& target_pose,
@@ -233,7 +234,7 @@ void publishVisualization(
 }
 
 // 整合所有安全检查到一个函数中
-bool isMovementSafe(const Eigen::Vector3d& target_position,
+bool isMovementSafe(Eigen::Vector3d& target_position,
                    const Eigen::Quaterniond& target_orientation,
                    const Eigen::Vector3d& previous_position,
                    const Eigen::Quaterniond& previous_orientation,
@@ -352,10 +353,15 @@ int main(int argc, char **argv) {
     Eigen::Quaterniond previous_goal_rotation_q(1, 0, 0, 0);
     Eigen::Vector3d previous_position_velocity = Eigen::Vector3d::Zero();
 
+    // 在main函数开始处添加这些声明
+    tf2_ros::TransformBroadcaster tf_broadcaster;
+    ros::Publisher marker_pub = node_handle.advertise<visualization_msgs::Marker>("visualization_marker", 10);
+
     // Subscribe to OptiTrack pose data
     ros::Subscriber sub_pose = node_handle.subscribe<geometry_msgs::PoseStamped>(
         "/natnet_ros/RigidBody001/pose", 1,
-        [&](const geometry_msgs::PoseStamped::ConstPtr& rigidObjectMsg) {
+        [&tf_broadcaster, &marker_pub, &hand_pose, &hand_pose_mutex, &move_group](
+            const geometry_msgs::PoseStamped::ConstPtr& rigidObjectMsg) {
             std::lock_guard<std::mutex> lock(hand_pose_mutex);
             if (!rigidObjectMsg) return;
 
@@ -419,13 +425,8 @@ int main(int argc, char **argv) {
     const int MAX_FAILURES = 5;  // 大连续失败次数
     int consecutive_failures = 0;
     moveit::core::RobotStatePtr previous_robot_state;
-    tf2_ros::TransformBroadcaster tf_broadcaster;
     ros::Publisher workspace_viz_pub = node_handle.advertise<visualization_msgs::Marker>("workspace_visualization", 1);
     ros::Publisher initial_pose_pub = node_handle.advertise<geometry_msgs::PoseStamped>("initial_pose", 1);
-
-    // 在main函数中添加
-    ros::Publisher marker_pub = 
-        node_handle.advertise<visualization_msgs::Marker>("visualization_marker", 10);
 
     // Control loop
     while (ros::ok()) {
@@ -532,12 +533,9 @@ int main(int argc, char **argv) {
             tf2::Vector3(0, 0, -1)   // 避免方向
         ));
 
-        // 添加关节限制约束 - 避免接近关节限制
-        ik_options.goals.emplace_back(new bio_ik::JointLimitAvoidanceGoal(0.1));
-
         // 添加最小位移目标 - 使运动更平滑
         if (previous_robot_state) {
-            ik_options.goals.emplace_back(new bio_ik::MinimalDisplacementGoal(0.5));
+            ik_options.goals.emplace_back(new bio_ik::MinimalDisplacementGoal(0.1));
         }
 
         // 添加正则化目标 - 使姿态更自然
@@ -566,8 +564,8 @@ int main(int argc, char **argv) {
         // 修改setFromIK调用
         bool ik_success = current_state->setFromIK(
             joint_model_group,
-            target_transform,
-            0.1,  // timeout
+            Eigen::Isometry3d(Eigen::Translation3d(target_position) * target_orientation),  // 使用正确的目标变换
+            0.1,
             state_validity_callback
         );
 
@@ -691,13 +689,13 @@ int main(int argc, char **argv) {
                             hand_pose);
 
         // 在控制循环中添加笛卡尔空间速度限制
-        Eigen::Vector3d position_velocity = (target_position - previous_goal_position) * frequency;
-        double current_velocity = position_velocity.norm();
+        Eigen::Vector3d cartesian_velocity = (target_position - previous_goal_position) * frequency;
+        double current_velocity = cartesian_velocity.norm();
 
         if (current_velocity > max_cartesian_velocity) {
             // 限制笛卡尔空间速度
-            position_velocity *= (max_cartesian_velocity / current_velocity);
-            target_position = previous_goal_position + position_velocity * (1.0 / frequency);
+            cartesian_velocity *= (max_cartesian_velocity / current_velocity);
+            target_position = previous_goal_position + cartesian_velocity * (1.0 / frequency);
         }
 
         // 限制角速度
@@ -714,3 +712,4 @@ int main(int argc, char **argv) {
 
     return 0;
 }
+
