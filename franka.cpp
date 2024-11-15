@@ -163,13 +163,14 @@ void publishVisualization(
     optitrack_tf.header.stamp = ros::Time::now();
     optitrack_tf.header.frame_id = frame_id;
     optitrack_tf.child_frame_id = "optitrack_marker";
-    ///natnet_ros/RigidBody001/pose 是数据的来源（数据流）
-optitrack_marker 是在ROS坐标系统中的标识（空间关系
+    
     optitrack_tf.transform.translation.x = optitrack_pose.translation().x();
     optitrack_tf.transform.translation.y = optitrack_pose.translation().y();
     optitrack_tf.transform.translation.z = optitrack_pose.translation().z();
     
-    Eigen::Quaterniond q_optitrack(optitrack_pose.rotation());
+    // 修复Eigen矩阵操作
+    Eigen::Matrix3d rot_matrix = optitrack_pose.rotation();
+    Eigen::Quaterniond q_optitrack(rot_matrix);
     optitrack_tf.transform.rotation.w = q_optitrack.w();
     optitrack_tf.transform.rotation.x = q_optitrack.x();
     optitrack_tf.transform.rotation.y = q_optitrack.y();
@@ -222,12 +223,39 @@ optitrack_marker 是在ROS坐标系统中的标识（空间关系
             marker.color.g = (axis == 1) ? 1.0 : 0.0;
             marker.color.b = (axis == 2) ? 1.0 : 0.0;
             
-            // 设置箭头方向
-            Eigen::Vector3d direction = poses[i].rotation().col(axis);
-            marker.pose.orientation.w = q_target.w();
-            marker.pose.orientation.x = q_target.x();
-            marker.pose.orientation.y = q_target.y();
-            marker.pose.orientation.z = q_target.z();
+            // 修改: 使用正确的方式获取旋转矩阵的列
+            Eigen::Vector3d direction;
+            if (axis == 0) {
+                direction = poses[i].rotation().col(0);
+            } else if (axis == 1) {
+                direction = poses[i].rotation().col(1);
+            } else {
+                direction = poses[i].rotation().col(2);
+            }
+            
+            // 计算方向的四元数
+            Eigen::Quaterniond q;
+            if(direction.norm() > 1e-6) {
+                Eigen::Vector3d z = direction.normalized();
+                Eigen::Vector3d x = z.cross(Eigen::Vector3d::UnitY());
+                if(x.norm() < 1e-6) {
+                    x = z.cross(Eigen::Vector3d::UnitZ());
+                }
+                x.normalize();
+                Eigen::Vector3d y = z.cross(x);
+                Eigen::Matrix3d rot;
+                rot.col(0) = x;
+                rot.col(1) = y;
+                rot.col(2) = z;
+                q = Eigen::Quaterniond(rot);
+            } else {
+                q = Eigen::Quaterniond::Identity();
+            }
+            
+            marker.pose.orientation.w = q.w();
+            marker.pose.orientation.x = q.x();
+            marker.pose.orientation.y = q.y();
+            marker.pose.orientation.z = q.z();
             
             marker_pub.publish(marker);
         }
@@ -559,12 +587,14 @@ int main(int argc, char **argv) {
             new bio_ik::PositionGoal("franka_flange", toTF(target_position)));
 
         // 保持初始方向
+        Eigen::Matrix3d rot_matrix = initial_poses.flange_pose.rotation();  // 先获取旋转矩阵
+        Eigen::Quaterniond q(rot_matrix);  // 从旋转矩阵构造四元数
         ik_options.goals.emplace_back(
             new bio_ik::OrientationGoal("franka_flange", 
-                tf2::Quaternion(initial_poses.flange_pose.rotation().x(),
-                               initial_poses.flange_pose.rotation().y(),
-                               initial_poses.flange_pose.rotation().z(),
-                               initial_poses.flange_pose.rotation().w())));
+                tf2::Quaternion(q.x(),
+                              q.y(),
+                              q.z(),
+                              q.w())));
 
         // 添加肘部约束 - 保持肘部朝下
         ik_options.goals.emplace_back(new bio_ik::SideGoal(
