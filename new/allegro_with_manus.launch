@@ -1,0 +1,10 @@
+<launch>
+    <!-- 启动 Allegro Hand -->
+    <include file="$(find allegro_hand)/launch/allegro_hand.launch" />
+
+    <!-- 启动 Manus 驱动 -->
+    <node name="manus_driver" pkg="manus_ros_driver" type="full_client" output="screen" />
+
+    <!-- 启动 Manus 到 Allegro 的映射节点 -->
+    <node name="manus_to_allegro" pkg="allegro_hand" type="ManusToAllegro.py" output="screen" />
+</launch>

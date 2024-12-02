@@ -1,0 +1,7 @@
+<launch>
+    <!-- 启动MoveIt Servo服务器 -->
+    <node name="servo_server" pkg="moveit_servo" type="servo_server" output="screen">
+
+        <rosparam command="load" file="$(find frankaAllegro_moveit_config)/config/servo_config.yaml" />
+    </node>
+</launch>
