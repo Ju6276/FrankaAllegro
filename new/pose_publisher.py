@@ -4,6 +4,7 @@ import rospy
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import PoseStamped
 import tf2_ros
+import tf
 import tf2_geometry_msgs
 
 class EndEffectorPosePublisher:
@@ -17,26 +18,28 @@ class EndEffectorPosePublisher:
             queue_size=1
         )
         
-        # 初始化TF2
-        self.tf_buffer = tf2_ros.Buffer()
-        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+        # 初始化TF监听器（同时支持tf和tf2）
+        self.tf_listener = tf.TransformListener()
+        
+        # 等待TF树准备就绪
+        rospy.sleep(1.0)  # 等待1秒确保TF树已经建立
         
         # 设置发布频率
         self.rate = rospy.Rate(100)  # 100Hz
         
+        rospy.loginfo("末端执行器位姿发布器已初始化")
+        
         # 开始发布位姿
         self.publish_pose_loop()
-        
-        rospy.loginfo("末端执行器位姿发布器已初始化")
 
     def publish_pose_loop(self):
         """循环发布末端执行器位姿"""
         while not rospy.is_shutdown():
             try:
-                # 从TF树获取末端执行器位姿
-                transform = self.tf_buffer.lookup_transform(
-                    "panda_link0",      # 基座坐标系
-                    "franka_flange",    # 末端法兰坐标系
+                # 获取变换
+                (trans, rot) = self.tf_listener.lookupTransform(
+                    'panda_link0',    # 基座坐标系
+                    'franka_flange',  # 末端法兰坐标系
                     rospy.Time(0)
                 )
                 
@@ -45,17 +48,20 @@ class EndEffectorPosePublisher:
                 current_pose.header.frame_id = "panda_link0"
                 current_pose.header.stamp = rospy.Time.now()
                 
-                # 从transform中获取位置和方向
-                current_pose.pose.position.x = transform.transform.translation.x
-                current_pose.pose.position.y = transform.transform.translation.y
-                current_pose.pose.position.z = transform.transform.translation.z
-                current_pose.pose.orientation = transform.transform.rotation
+                # 设置位置和方向
+                current_pose.pose.position.x = trans[0]
+                current_pose.pose.position.y = trans[1]
+                current_pose.pose.position.z = trans[2]
+                current_pose.pose.orientation.x = rot[0]
+                current_pose.pose.orientation.y = rot[1]
+                current_pose.pose.orientation.z = rot[2]
+                current_pose.pose.orientation.w = rot[3]
                 
                 # 转换为JointState格式并发布
                 self.publish_pose(current_pose)
                 
-            except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-                    tf2_ros.ExtrapolationException) as e:
+            except (tf.LookupException, tf.ConnectivityException,
+                    tf.ExtrapolationException) as e:
                 rospy.logwarn_throttle(1, f"获取TF转换失败: {str(e)}")
                 
             self.rate.sleep()
@@ -91,4 +97,4 @@ def main():
         pass
 
 if __name__ == '__main__':
-    main() 
+    main()
